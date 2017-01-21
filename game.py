@@ -1,3 +1,4 @@
+'''
 import pygame
 import time
 import random
@@ -112,6 +113,106 @@ def game_loop():
         
         pygame.display.update()
         clock.tick(60)
+
+game_loop()
+pygame.quit()
+quit()
+
+'''
+
+
+
+
+'''
+Map Rendering Demo
+rendermap.py
+By James Walker (trading as Ilmiont Software).
+Copyright (C)Ilmiont Software 2013. All rights reserved.
+
+This is a simple program demonstrating rendering a 2D map in Python with Pygame from a list of map data.
+Support for isometric or flat view is included.
+'''
+
+import pygame
+from pygame.locals import *
+import sys
+
+pygame.init()
+
+xWindow = 510
+yWindow = 960
+
+DISPLAYSURF = pygame.display.set_mode((yWindow, xWindow), RESIZABLE)#, pygame.FULLSCREEN)    #set the display mode, window title and FPS clock
+pygame.display.set_caption('Map Rendering Demo')
+FPSCLOCK = pygame.time.Clock()
+
+map_data = [
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+[1, 1, 1, 2, 0, 0, 0, 2, 2, 2, 30, 0, 0, 0, 0],
+[0, 3, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+[0, 0, 1, 0, 0, 0, 1, 3, 0, 3, 1, 0, 0, 0, 0],
+[0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0, 0],
+[0, 0, 1, 3, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1],
+[0, 0, 1, 2, 3, 0, 1, 0, 0, 0, 3, 2, 3, 0, 0],
+[0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+[0, 3, 0, 2, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+[0, 0, 0, 0, 1, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0],
+[0, 0, 0, 3, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+[0, 0, 0, 3, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+[0, 0, 0, 2, 3, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+]               #the data for the map expressed as [row[tile]].
+
+dirt = pygame.image.load('dirt.png').convert_alpha()  #load images
+grass = pygame.image.load('grass.png').convert_alpha()
+trench = pygame.image.load('trench.png').convert_alpha()
+LPF = pygame.image.load('LPF.png').convert_alpha()
+
+tileWidth = 64  #holds the tile width and height
+tileHeight = 64
+
+currentRow = -7  #holds the current map row we are working on (y)
+currentTile = 7 #holds the current tile we are working on (x)
+
+for row in map_data:    #for every row of the map...
+    for tile in row:
+        if tile == 0:
+            tileImage = grass
+        elif tile == 1:
+            tileImage = dirt
+        elif tile == 2:
+            tileImage = trench
+        elif tile == 3:
+            tileImage = LPF
+        #print(tile)
+        cartx = currentTile * tileWidth      #x is the index of the currentTile * the tile width
+        #print(cartx)
+        carty = currentRow * tileHeight      #y is the index of the currentRow * the tile height
+        #print(carty)
+        x = (cartx - carty) / 2
+        #print(x)
+        y = (cartx + carty) / 4
+        #print(y)
+        #print('\n\n')
+        currentTile += 1    #increase the currentTile holder so we know that we are starting rendering a new tile in a moment
+
+        DISPLAYSURF.blit(tileImage, (x, y)) #display the actual tile
+    currentTile = 7 #reset the current working tile to 0 (we're starting a new row remember so we need to render the first tile of that row at index 0)
+    currentRow += 1 #increment the current working row so we know we're starting a new row (used for calculating the y coord for the tile)
+
+while True:
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == KEYUP:
+            if event.key == K_ESCAPE:
+                pygame.quit()
+                sys.exit()
+
+    pygame.display.flip()
+    FPSCLOCK.tick(30)
 
 game_loop()
 pygame.quit()
